@@ -1,20 +1,19 @@
 const nodemailer = require("nodemailer");
-const Email = require("../models/emailModel.js");
 
 const sendEmail = async (req, res) => {
   const { title, from, to, subject, html } = req.body;
 
-  if (!title || !from || !to || !subject || !html) {
+  if (!title || !from || !subject || !html || !to) {
     return res.status(400).json({
       success: false,
-      message: "title, from, to, subject, and html are required",
+      message: "All fields (title, from, to, subject, html) are required",
     });
   }
 
   try {
-    const transport = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
-      port: Number(process.env.EMAIL_PORT),
+      port: process.env.EMAIL_PORT,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
@@ -24,33 +23,26 @@ const sendEmail = async (req, res) => {
       },
     });
 
-    const emailOptions = {
+    const mailOptions = {
       from: process.env.EMAIL_USER,
       to,
       subject,
       html,
     };
 
-    transport.sendMail(emailOptions, async (error, info) => {
-      if (error) {
-        return res.status(500).json({ success: false, error });
-      }
+    await transporter.sendMail(mailOptions);
 
-      await Email.create({ title, from, to, subject, html });
-
-      res.status(200).json({
-        success: true,
-        message: "Email sent successfully",
-        info,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Email sent successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Sending email failed",
+      message: "Email sending failed",
       error,
     });
   }
 };
 
-module.exports = { sendEmail };
+module.exports = sendEmail;

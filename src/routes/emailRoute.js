@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const sendEmail = require("../controllers/sendEmailController");
+const sendEmail = require("../Controllers/sendEmailController.js"); 
 
 router.post("/api/send", sendEmail);
 
