@@ -17,14 +17,12 @@ const sendEmail = async (req ,res) =>{
                 }
             
             })
-            
             const emailOptions = {
                 from: process.env.EMAIL_USER,
                 to,
                 subject,
                 html: text,
             };
-            
        Transport.sendEmail(emailOptions, function(error, info){
             if(error){
                 console.log(error)
@@ -40,10 +38,8 @@ const sendEmail = async (req ,res) =>{
                 html: text,
                 message : "email sent successfully"
             })
-
     } catch (error) {
         res.status(500).json({success :false, message : "sending email failure", error})
     }
-    
 };
 exports.module = {sendEmail}
